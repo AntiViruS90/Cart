@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cart</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+    <body>
+        <div class="div_table">
+            <h3>Cart</h3>
+            <table>
+                {% for one in items %}
+                    <tr>
+                        <td>{{ one.product.desription }}</td>
+                        <td>{{ one.count }} шт.</td>
+                        <td>{{ one.total }} &#36;</td>
+                        <td><a href="{% url 'delete' one.id %}"><button>Delete</button></a></td>
+                    </tr>
+                {% endfor %}
+            </table>
+            <h2>Total: {{ amount }} &#36;</h2>
+        </div>
+        <hr>
+        <br>
+        <a href="{% url 'home' %}">
+            <button style="margin-left: 20px">Main Page</button>
+        </a>
+    </body>
+</html>
