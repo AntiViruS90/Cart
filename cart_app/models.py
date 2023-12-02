@@ -15,3 +15,12 @@ class Cart(m.Model):
 
     def calctotal(self):
         return self.count * self.product.price * self.product.discount
+
+
+class OrderCart(m.Model):
+    address = m.CharField(max_length=100)
+    name = m.CharField(max_length=50)
+    tel = m.CharField(max_length=20)
+    total = m.IntegerField()
+    order = m.TextField()
+

@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <title>Cart</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="{% static 'js/jquery-3.7.0.min.js' %}"></script>
+    <script src="{% static 'js/js.js' %}"></script>
 </head>
     <body>
         <div class="div_table">
@@ -20,11 +22,28 @@
                 {% endfor %}
             </table>
             <h2>Total: {{ amount }} &#36;</h2>
+            <input type="button" id="order_button" value="Press to order">
+            <div id="form" hidden>
+                <form method="post">
+                    {% csrf_token %}
+                    <label for="address">Write here city</label>
+                    <input type="text" id="address">
+                    <label for="name">Enter Your Name</label>
+                    <input type="text" id="name">
+                    <label for="tel">Telephone</label>
+                    <input type="tel" id="tel">
+                    <input type="button" id="btn_order" value="Send">
+                </form>
+            </div>
         </div>
         <hr>
         <br>
         <a href="{% url 'home' %}">
             <button style="margin-left: 20px">Main Page</button>
         </a>
+{#    <script>#}
+{#        // Передаем CSRF токен в JavaScript#}
+{#        const csrf_token = "{{ csrf_token }}";#}
+{#    </script>#}
     </body>
 </html>
