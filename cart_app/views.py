@@ -1,9 +1,8 @@
-from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render, redirect, HttpResponse
+from django.http import JsonResponse
+from django.shortcuts import render, redirect
 from .models import *
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-import requests
 
 
 def index(request):
@@ -14,18 +13,29 @@ def index(request):
 
 def buy(request, id):
     item = Product.objects.get(id=id)
-    if Cart.objects.filter(product_id=id):
-        cart_object = Cart.objects.get(product_id=id)
-        cart_object.count += 1
-        cart_object.total = cart_object.calctotal()
-        cart_object.save()
-    else:
-        Cart.objects.create(count=1, product_id=id, total=item.price)
+    user = request.user
+    if user.username:
+        if Cart.objects.filter(product_id=id, user_id=user.id):
+            cart_object = Cart.objects.get(product_id=id)
+            cart_object.count += 1
+            cart_object.total = cart_object.calctotal()
+            cart_object.save()
+        else:
+            Cart.objects.create(count=1, product_id=id, total=item.price, user=user)
+    else:   # Если пользователь не зареган в системе
+
+        # if Cart.objects.filter(product_id=id):
+        #     cart_object = Cart.objects.get(product_id=id, user_id__isnull=True)
+        #     cart_object.count += 1
+        #     cart_object.total = cart_object.calctotal()
+        #     cart_object.save()
+        # else:
+            Cart.objects.create(count=1, product_id=id, total=item.price)
     return redirect('home')
 
 
 def cart(request):
-    items = Cart.objects.all()
+    items = Cart.objects.filter(user_id=request.user.id)
     amount = 0
     for i in items:
         amount += i.total
@@ -46,10 +56,10 @@ def order_view(request):
         address = request.POST.get('address')
         name = request.POST.get('name')
         tel = request.POST.get('tel')
-        items = Cart.objects.all()
+        items = Cart.objects.filter(user_id=request.user.id)
         order = ''
         for one in items:
-            order += one.product.desription + ' ' + str(one.count) + ' ' + str(one.total) + '\n'
+            order += one.product.desription + ' ' + str(one.count) + 'шт. ' + str(one.total) + 'руб. ' + '\n'
         total = 0
         for i in items:
             total += i.total
@@ -60,10 +70,21 @@ def order_view(request):
         chat_id = 682235838
         message = order + "Address: " + address + '\nName: ' + name + '\nPhone: ' + tel
         url = f'https://api.telegram.org/bot{token}/sendMessage?chat_id={chat_id}&text={message}'
-        print(requests.get(url).json())
+        # print(requests.get(url).json())
     # return redirect('home')
     #     return HttpResponse('Data successfully')  # Вариант 1
         return JsonResponse({'message': 'Data successfully', 'link': '../'})
     else:
         # Если запрос не POST, то просто отображаем страницу заказа
         return render(request, 'order.html')
+
+
+def cart_count(request, num, id):
+    product = Cart.objects.get(id=id)
+    if product.count == 1 and int(num) < 0:
+        product.delete()
+    else:
+        product.count += int(num)
+        product.total = product.calctotal()
+        product.save()
+    return redirect('cart')

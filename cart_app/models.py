@@ -1,4 +1,5 @@
 from django.db import models as m
+from django.contrib.auth.models import User
 
 
 class Product(m.Model):
@@ -7,8 +8,12 @@ class Product(m.Model):
     image = m.CharField(max_length=100)
     discount = m.FloatField(default=1)
 
+    def __str__(self):
+        return self.desription
+
 
 class Cart(m.Model):
+    user = m.ForeignKey(User, on_delete=m.CASCADE, null=True, blank=True)
     product = m.ForeignKey(Product, on_delete=m.CASCADE)
     count = m.IntegerField()
     total = m.DecimalField(decimal_places=2, max_digits=8)

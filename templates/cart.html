@@ -15,23 +15,41 @@
                 {% for one in items %}
                     <tr>
                         <td>{{ one.product.desription }}</td>
+                        <td>
+                            <a href="{% url 'count' -1 one.id %}">
+                                <button> - </button>
+                            </a>
+                        </td>
                         <td>{{ one.count }} шт.</td>
-                        <td>{{ one.total }} &#36;</td>
+                        <td>
+                            <a href="{% url 'count' 1 one.id %}">
+                                <button> + </button>
+                            </a>
+                        </td>
+                        <td>&#36; {{ one.total }}</td>
                         <td><a href="{% url 'delete' one.id %}"><button>Delete</button></a></td>
                     </tr>
                 {% endfor %}
             </table>
-            <h2>Total: {{ amount }} &#36;</h2>
+            <h2>Total: &#36; {{ amount }} </h2>
             <input type="button" id="order_button" value="Press to order">
             <div id="form" hidden>
                 <form method="post">
                     {% csrf_token %}
-                    <label for="address">Write here city</label>
-                    <input type="text" id="address">
-                    <label for="name">Enter Your Name</label>
-                    <input type="text" id="name">
-                    <label for="tel">Telephone</label>
-                    <input type="tel" id="tel">
+                    <table>
+                        <tr>
+                            <td><label for="address">Customer's City</label></td>
+                            <td><input type="text" id="address"></td>
+                        </tr>
+                        <tr>
+                            <td><label for="name">Customer's Name</label></td>
+                            <td><input type="text" id="name"></td>
+                        </tr>
+                        <tr>
+                            <td><label for="tel">Customer's Telephone</label></td>
+                            <td><input type="tel" id="tel"></td>
+                        </tr>
+                    </table>
                     <input type="button" id="btn_order" value="Send">
                 </form>
             </div>
