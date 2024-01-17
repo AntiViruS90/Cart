@@ -8,7 +8,9 @@ window.onload = function(){
         address = document.getElementById('address').value
         name = document.getElementById('name').value
         tel = document.getElementById('tel').value
-        if (address&&name&&tel) {
+        var re = /^[+][\d]{10}\d$/
+        var valid = re.test(tel)
+        if (address&&name&&tel&&valid) {
             let url = '/cart/order/'
             $.ajax(url, {
                 method: 'POST',

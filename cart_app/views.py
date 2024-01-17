@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from .models import *
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from .forms import *
 
 
 def index(request):
@@ -36,10 +37,16 @@ def buy(request, id):
 
 def cart(request):
     items = Cart.objects.filter(user_id=request.user.id)
+    myform = Myforms()
     amount = 0
     for i in items:
         amount += i.total
-    data = {'items': items, 'amount': amount}
+    if request.POST:
+        myform = Myforms(request.POST)
+        print("Request")
+        if myform.is_valid():
+            print(myform.cleaned_data['name'])
+    data = {'items': items, 'amount': amount, 'myform': myform}
     return render(request, 'cart.html', data)
 
 
